@@ -68,7 +68,7 @@
 <link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="iOS," />
 
 
 
@@ -84,15 +84,22 @@
 
 
 
-<meta name="description" content="行走路上,记录风景~">
-<meta property="og:type" content="website">
-<meta property="og:title" content="pp锅的小站">
-<meta property="og:url" content="http://yoursite.com/archives/index.html">
+<meta name="description" content="在使用popViewController时候遇到了两个比较隐蔽的问题.因此,在以后的开发中需要自己注意.
+tips1在调用popViewController时,使用GCD丢到main queue中去执行:
+12345dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get">
+<meta property="og:type" content="article">
+<meta property="og:title" content="popToViewController的坑">
+<meta property="og:url" content="http://yoursite.com/2016/08/27/popToViewController的坑/index.html">
 <meta property="og:site_name" content="pp锅的小站">
-<meta property="og:description" content="行走路上,记录风景~">
+<meta property="og:description" content="在使用popViewController时候遇到了两个比较隐蔽的问题.因此,在以后的开发中需要自己注意.
+tips1在调用popViewController时,使用GCD丢到main queue中去执行:
+12345dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get">
+<meta property="og:updated_time" content="2016-08-26T16:19:12.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="pp锅的小站">
-<meta name="twitter:description" content="行走路上,记录风景~">
+<meta name="twitter:title" content="popToViewController的坑">
+<meta name="twitter:description" content="在使用popViewController时候遇到了两个比较隐蔽的问题.因此,在以后的开发中需要自己注意.
+tips1在调用popViewController时,使用GCD丢到main queue中去执行:
+12345dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get">
 
 
 
@@ -113,9 +120,9 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/archives/"/>
+  <link rel="canonical" href="http://yoursite.com/2016/08/27/popToViewController的坑/"/>
 
-  <title> 归档 | pp锅的小站 </title>
+  <title> popToViewController的坑 | pp锅的小站 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -136,7 +143,7 @@
     
   
 
-  <div class="container one-collumn sidebar-position-left  page-archive  ">
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -234,288 +241,136 @@
           <div id="content" class="content">
             
 
-  <section id="posts" class="posts-collapse">
-    <span class="archive-move-on"></span>
-
-    <span class="archive-page-counter">
-      
-      
-      
-        
-      
-      嗯..! 目前共计 7 篇日志。 继续努力。
-    </span>
-
+  <div id="posts" class="posts-expand">
     
-
-      
-      
-      
-
-      
-        
-        <div class="collection-title">
-          <h2 class="archive-year motion-element" id="archive-year-2016">2016</h2>
-        </div>
-      
-      
-
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h1 class="post-title">
-        
-            <a class="post-title-link" href="/2016/08/27/iOS音频系列(一)/" itemprop="url">
-              
-                <span itemprop="name">iOS音频系列(一)--音频基础</span>
-              
-            </a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2016-08-27T00:19:12+08:00"
-              content="2016-08-27" >
-          08-27
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-    
-
-      
-      
-      
-
-      
-      
-
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h1 class="post-title">
-        
-            <a class="post-title-link" href="/2016/08/27/iOS处理图片大小总结/" itemprop="url">
-              
-                <span itemprop="name">iOS处理图片大小总结</span>
-              
-            </a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2016-08-27T00:19:12+08:00"
-              content="2016-08-27" >
-          08-27
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-    
-
-      
-      
-      
-
-      
-      
-
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h1 class="post-title">
-        
-            <a class="post-title-link" href="/2016/08/27/iOS音频系列(三)/" itemprop="url">
-              
-                <span itemprop="name">iOS音频系列(三)--AudioQueue</span>
-              
-            </a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2016-08-27T00:19:12+08:00"
-              content="2016-08-27" >
-          08-27
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-    
-
-      
-      
-      
-
-      
-      
-
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h1 class="post-title">
-        
-            <a class="post-title-link" href="/2016/08/27/popToViewController的坑/" itemprop="url">
-              
-                <span itemprop="name">popToViewController的坑</span>
-              
-            </a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2016-08-27T00:19:12+08:00"
-              content="2016-08-27" >
-          08-27
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-    
-
-      
-      
-      
-
-      
-      
-
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h1 class="post-title">
-        
-            <a class="post-title-link" href="/2016/08/27/iOS音频系列(四)/" itemprop="url">
-              
-                <span itemprop="name">iOS音频系列(四)--音频的文件格式和数据格式</span>
-              
-            </a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2016-08-27T00:19:12+08:00"
-              content="2016-08-27" >
-          08-27
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-    
-
-      
-      
-      
-
-      
-      
-
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h1 class="post-title">
-        
-            <a class="post-title-link" href="/2016/08/27/iOS音频系列(二)/" itemprop="url">
-              
-                <span itemprop="name">iOS音频系列(二)--CoreAudio</span>
-              
-            </a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2016-08-27T00:19:12+08:00"
-              content="2016-08-27" >
-          08-27
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-    
-
-      
-      
-      
-
-      
-      
-
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h1 class="post-title">
-        
-            <a class="post-title-link" href="/2016/07/26/RunLoop总结/" itemprop="url">
-              
-                <span itemprop="name">RunLoop学习总结</span>
-              
-            </a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2016-07-26T21:17:16+08:00"
-              content="2016-07-26" >
-          07-26
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-    
-
-  </section>
 
   
+  
 
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                popToViewController的坑
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-08-27T00:19:12+08:00" content="2016-08-27">
+              2016-08-27
+            </time>
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/08/27/popToViewController的坑/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/08/27/popToViewController的坑/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在使用popViewController时候遇到了两个比较隐蔽的问题.因此,在以后的开发中需要自己注意.</p>
+<h3 id="tips1"><a href="#tips1" class="headerlink" title="tips1"></a>tips1</h3><p>在调用popViewController时,使用GCD丢到main queue中去执行:</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(<span class="number">0.1</span> * <span class="built_in">NSEC_PER_SEC</span>)), dispatch_get_main_queue(), ^&#123;</div><div class="line">	...</div><div class="line">   [<span class="keyword">self</span>.navigationController popViewControllerAnimated:<span class="literal">NO</span>];</div><div class="line">	...</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h3 id="tips2"><a href="#tips2" class="headerlink" title="tips2"></a>tips2</h3><p>在代码中可能连续多次调用<code>popViewControllerAnimated</code>地方,最好通过遍历<code>navigationController.viewControllers</code>找到具体要遍历到哪个再直接pop到目标<code>controller</code>.</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(<span class="number">0.1</span> * <span class="built_in">NSEC_PER_SEC</span>)), dispatch_get_main_queue(), ^&#123;</div><div class="line">    <span class="built_in">BOOL</span> findIt = <span class="literal">NO</span>;</div><div class="line">    <span class="built_in">UIViewController</span> *targetVC = <span class="literal">nil</span>;</div><div class="line">    <span class="keyword">for</span> (<span class="built_in">UIViewController</span> *subVC <span class="keyword">in</span> <span class="keyword">self</span>.navigationController.viewControllers) &#123;</div><div class="line">        <span class="keyword">if</span> (findIt) &#123;</div><div class="line">            <span class="keyword">break</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">if</span> (subVC == xxx) &#123;</div><div class="line">            findIt = <span class="literal">YES</span>;</div><div class="line">        &#125;<span class="keyword">else</span>&#123;</div><div class="line">            targetVC = subVC;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">	[<span class="keyword">self</span>.navigationController popToViewController:targetVC animated:<span class="literal">NO</span>];</div><div class="line"></div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iOS/" rel="tag">#iOS</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/08/27/iOS音频系列(四)/" rel="next" title="iOS音频系列(四)--音频的文件格式和数据格式">
+                <i class="fa fa-chevron-left"></i> iOS音频系列(四)--音频的文件格式和数据格式
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/08/27/iOS音频系列(三)/" rel="prev" title="iOS音频系列(三)--AudioQueue">
+                iOS音频系列(三)--AudioQueue <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -523,6 +378,14 @@
 
 
           
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/08/27/popToViewController的坑/"
+           data-title="popToViewController的坑" data-url="http://yoursite.com/2016/08/27/popToViewController的坑/">
+      </div>
+    
+  </div>
+
 
         </div>
         
@@ -542,8 +405,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel  sidebar-panel-active ">
+      <section class="site-overview sidebar-panel ">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/avatar.png"
@@ -606,6 +478,17 @@
 
       </section>
 
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#tips1"><span class="nav-number">1.</span> <span class="nav-text">tips1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tips2"><span class="nav-number">2.</span> <span class="nav-text">tips2</span></a></li></ol></div>
+            
+          </div>
+        </section>
       
 
     </div>
@@ -709,11 +592,9 @@
 
 
   
-  
-    <script type="text/javascript" id="motion.page.archive">
-      $('.archive-year').velocity('transition.slideLeftIn');
-    </script>
-  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
 
 
   
