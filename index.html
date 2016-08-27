@@ -258,141 +258,6 @@
             
               
                 
-                <a class="post-title-link" href="/2016/08/27/iOS音频系列(一)/" itemprop="url">
-                  iOS音频系列(一)--音频基础
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-08-27T00:19:12+08:00" content="2016-08-27">
-              2016-08-27
-            </time>
-          </span>
-
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/08/27/iOS音频系列(一)/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/08/27/iOS音频系列(一)/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>前些日子由于项目需要,一直在研究iOS CoreAudio相关的内容.在这里记录一些笔记.现实生活中，我们听到的声音都是时间连续的，我们称为这种信号叫模拟信号。模拟信号需要进行数字化以后才能在计算机中使用。数字化的过程如下：</p>
-<p><code>采样 -&gt; 量化 -&gt; 编码</code></p>
-<p>通过获取间隔相同时间的某个模拟信号的值，然后对这些采样以后得到的值进行量化，然后使用一定的bit进行编码存储，整个过程结束后就会输出PCM数据。在iOS的Core Audio Services中使用的音频数据只能是线性PCM格式的音频数据，这是一种未进过压缩的音频数据格式。要理解整个过程就需要理解多个重要概念：采样频率和采样位数，比特率等。</p>
-<h3 id="采样频率"><a href="#采样频率" class="headerlink" title="采样频率"></a>采样频率</h3><p>采样频率是指单位时间内对声音模拟信号的采样次数。采样率类似于视频的帧数，比如电影的采样率是24Hz。当我们把采样到的一个个静止画面再以采样率同样的速度回放时，看到的就是连续的画面。同样的道理，把以44.1kHZ采样率记录的CD以同样的速率播放时，就能听到连续的声音。显然，这个采样率越高，听到的声音和看到的图像就越连贯。当然，人的听觉和视觉器官能分辨的采样率是有限的。对同一段声音，用20kHz和44.1kHz来采样，重放时，可能可以听出其中的差别，而基本上高于44.1kHZ采样的声音，比如说96kHz采样，绝大部分人已经觉察不到两种采样出来的声音的分别了。之所以使用44.1kHZ这个数值是因为经过了反复实验，人们发现这个采样精度最合适，低于这个值就会有较明显的损失，而高于这个值人的耳朵已经很难分辨，而且增大了数字音频所占用的空间。我们所使用的CD的采样标准就是44.1k。</p>
-<h3 id="采样位数"><a href="#采样位数" class="headerlink" title="采样位数"></a>采样位数</h3><p>采样位数可以理解为采集卡处理声音的解析度。这个数值越大，解析度就越高，录制和回放的声音就越真实。我们首先要知道：电脑中的声音文件是用数字0和1来表示的。连续的模拟信号按一定的采样频率经数码脉冲取样后，每一个离散的脉冲信号被以一定的量化精度量化成一串二进制编码流，这串编码流的位数即为采样位数，也称为量化精度。</p>
-<p>在电脑上录音的本质就是把模拟声音信号转换成数字信号。反之，在播放时则是把数字信号还原成模拟声音信号输出。采集卡的位是指采集卡在采集和播放声音文件时所使用数字声音信号的二进制位数。采集卡的位客观地反映了数字声音信号对输入声音信号描述的准确程度。例如，同一段音频信息，使用8bit描述单个采样信息，那么采样量化的范围就是0~255,如果使用16bit表示单个采样值,那么相应的采样量化的范围为0~64k。与8位采样位数相比，16位采样的动态范围的宽度更小，动态范围更宽广，声音的被记录的更加精细。一般CD使用的采样位数为16位。</p>
-<p>16位二进制数的最小值是0000000000000000，最大值是1111111111111111，对应的十进制数就是0和65535，也就是最大和最小值之间的差值是65535，也就是说，它量化的模拟量的动态范围可以差65535，也就是96.32分贝（20 * lg65535）），所以，量化精度只和动态范围有关，和频率响应没关系。动态范围定在96分贝也是有道理的，人耳的无痛苦极限声压是90分贝，96分贝的动态范围在普通应用中足够使用，所以96分贝动态范围内的模拟波，经量化后，不会产生削波失真的。</p>
-<blockquote>
-<p>所谓分贝是指两个相同的物理量（例A1和A0）之比取以10为底的对数并乘以10（或20）。N = 10lg(A1/A0) 分贝符号为”dB”，它是无量纲的。式中A0是基准量（或参考量），A是被量度量。被量度量和基准量之比取对数，这对数值称为被量度量的”级”。亦即用对数标度时，所得到的是比值，它代表被量度量比基准量高出多少”级”。</p>
-</blockquote>
-<h3 id="位速-比特率-码率"><a href="#位速-比特率-码率" class="headerlink" title="位速/比特率/码率"></a>位速/比特率/码率</h3><p>位速/比特率/码率描述的都是一个东西，是指在一个数据流中每秒钟能通过的信息量。我们可能看到过音频文件用 “128–Kbps MP3” 或 “64–Kbps WMA” 进行描述的情形。Kbps 表示 “每秒千位数”，因此数值越大表示数据越多：128–Kbps MP3 音频文件包含的数据量是 64–Kbps WMA 文件的两倍，并占用两倍的空间。（不过在这种情况下，这两种文件听起来没什么两样。原因是什么呢？有些文件格式比其他文件能够更有效地利用数据， 64–Kbps WMA 文件的音质与 128–Kbps MP3 的音质相同。）需要了解的重要一点是，位速越高，信息量越大，对这些信息进行解码的处理量就越大，文件需要占用的空间也就越多。</p>
-<p>从码率的计算公式中可以清楚的看出码率和采样位数的关系:</p>
-<p><code>码率=取样频率×量化精度×声道数</code></p>
-<blockquote>
-<p>一张CD,双声道,采样率44.1kHz，每个采样位数13bit，时长74分钟(4440秒)，则CD的容量为<code>13*2*44100*4440</code>约等于<code>640MB</code>。</p>
-</blockquote>
-<h3 id="VBR、ABR、CBR"><a href="#VBR、ABR、CBR" class="headerlink" title="VBR、ABR、CBR"></a>VBR、ABR、CBR</h3><p>VBR(Variable Bitrate)动态比特率。也就是没有固定的比特率，压缩软件在压缩时根据音频数据即时确定使用什么比特率。这是新发展的算法，他们将一首歌的复杂部分用高Bitrate编码，简单部分用低Bitrate编码。主意虽然不错，可惜新编码器的VBR算法很差，音质与CBR相去甚远。幸运的是， Lame完美地优化了VBR算法，使之成为MP3的最佳编码模式。这是以质量为前提兼顾文件大小的方式，推荐编码模式。</p>
-<p>ABR(Average Bitrate)平均比特率，是VBR的一种插值参数。Lame针对CBR不佳的文件体积比和VBR生成文件大小不定的特点独创了这种编码模式。ABR也被称为“Safe VBR”，它是在指定的平均Bitrate内，以每50帧(30帧约1秒)为一段，低频和不敏感频率使用相对低的流量，高频和大动态表现时使用高流量。举例来说，当指定用192kbps ABR对一段wav文件进行编码时，Lame会将该文件的85%用192kbps固定编码，然后对剩余15%进行动态优化：复杂部分用高于192kbps 来编码、简单部分用低于192kbps来编码。与192kbps CBR相比，192kbps ABR在文件大小上相差不多，音质却提高不少。ABR编码在速度上是VBR编码的2到3倍，在128-256kbps范围内质量要好于CBR。可以做为 VBR和CBR的一种折衷选择。</p>
-<p>CBR(Constant Bitrate)，常数比特率，指文件从头到尾都是一种位速率。相对于VBR和ABR来讲，它压缩出来的文件体积很大，但音质却不会有明显的提高。</p>
-<h3 id="PCM格式与LPCM格式"><a href="#PCM格式与LPCM格式" class="headerlink" title="PCM格式与LPCM格式"></a>PCM格式与LPCM格式</h3><p>PCM（脉冲编码调制）是一种将模拟语音信号变换为数字信号的编码方式。主要经过3个过程：抽样、量化和编码。抽样过程将连续时间模拟信号变为离散时间、连续幅度的抽样信号，量化过程将抽样信号变为离散时间、离散幅度的数字信号，编码过程将量化后的信号编码成为一个二进制码组输出。</p>
-<p>量化分为线性量化和非线性量化。线性量化在整个量化范围内，量化间隔均相等，称为LPCM。非线性量化采用不等的量化间隔。量化间隔数由编码的二进制位数决定。例如，CD采用16bit线性量化，则量化间隔数L=65536。位数（n)越多，精度越高，信噪比<code>SNR=6.02n+1.76</code>(dB)也越高。但编码的二进制位数不是无限制的，需要根据所需的数据率确定。比如：CD可以达到的数据率为2×44.1×16=1411.2Kbit/s。</p>
-<p>总而言之，LPCM格式中的音频数据是未压缩的线性量化后的音频数据。</p>
-<blockquote>
-<p>用iOS的官方文档中对几个关键词的解释：</p>
-<ul>
-<li>A sample is single numerical value for a single channel.</li>
-<li>A frame is a collection of time-coincident samples. For instance, a stereo sound file has two samples per frame, one for the left channel and one for the right channel.</li>
-<li>A packet is a collection of one or more contiguous frames. In linear PCM audio, a packet is always a single frame. In compressed formats, it is typically more. A packet defines the smallest meaningful set of frames for a given audio data format.</li>
-</ul>
-</blockquote>
-<h3 id="压缩过的音频格式"><a href="#压缩过的音频格式" class="headerlink" title="压缩过的音频格式"></a>压缩过的音频格式</h3><p>在常见的音频格式对PCM原始帧进行封装时也是以frame帧为单位的，我们一般将压缩后的音频数据帧称为媒体帧，对应原始的PCM数据称为原始帧。每个媒体帧又分成head头，body数据体。在帧头中，会存储这个媒体帧中body部分的码率，采样率等解码必须的信息，因此每一个媒体帧都可以独立于文件存在和播放。在body中存储着一个或者多个媒体帧，这些媒体真是若干个PCM原始帧经过特定的压缩算法压缩得到的。通常情况下，我们将单位时间的媒体帧的个数称为帧率。</p>
-<p>上文的采样率和帧率这两个概念都描述了音频媒体的“连续”性，二者的区别在于每个音频的媒体帧中会包含多个音频采样(多个PCM data)，如1个AAC帧中包含1024个采样。</p>
-<blockquote>
-<p>在学习音频/视频相关内容之前,首先需要弄清楚的的是音频的文件类型和音频格式是有本质区别的.封装类型比如.ogg,音频格式比如.mp3.(具体的区别可以百度)</p>
-</blockquote>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
                 <a class="post-title-link" href="/2016/08/27/iOS处理图片大小总结/" itemprop="url">
                   iOS处理图片大小总结
                 </a>
@@ -482,469 +347,6 @@
 <blockquote>
 <p>参考文档: <a href="http://nshipster.com/image-resizing/" target="_blank" rel="external">Image Resizing Techniques</a></p>
 </blockquote>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/08/27/iOS音频系列(三)/" itemprop="url">
-                  iOS音频系列(三)--AudioQueue
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-08-27T00:19:12+08:00" content="2016-08-27">
-              2016-08-27
-            </time>
-          </span>
-
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/08/27/iOS音频系列(三)/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/08/27/iOS音频系列(三)/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>本篇是AudioQueue的官方文档的笔记。Audio Queue Services可以play和record以下三类任何audio data：</p>
-<ul>
-<li>Linear PCM.</li>
-<li>Any compressed format supported natively on the Apple platform you are developing for.</li>
-<li>Any other format for which a user has an installed codec.</li>
-</ul>
-<p>对于最后一种类型，我们可以在使用AudioQueue同时自己将自己需要的format转化成LPCM。AudioQueue是对mic和speaker的高度抽象，同时可以非常简单的时间音频codecs。与此同时，它也有一些高级功能，例如多个音频的同步播放，回放等等。</p>
-<hr>
-<h2 id="About-Audio-Queues"><a href="#About-Audio-Queues" class="headerlink" title="About Audio Queues"></a>About Audio Queues</h2><p>这章会了解到audio queue的功能，结构体，以及内部运行的机理。具体的内容包括audio queues，audio queue buffers，audio queue会使用到的callback等。还有就是audio queue的状态以及参数。</p>
-<h3 id="What-Is-an-Audio-Queue"><a href="#What-Is-an-Audio-Queue" class="headerlink" title="What Is an Audio Queue?"></a>What Is an Audio Queue?</h3><p>An audio queue 是iOS中play和record audio的对象.底层是<code>AudioQueueRef</code>。Audio queue可以完成以下工作：</p>
-<ul>
-<li>Connecting to audio hardware</li>
-<li>Managing memory</li>
-<li>Employing codecs, as needed, for compressed audio formats</li>
-<li>Mediating recording or playback</li>
-</ul>
-<h4 id="Audio-Queue-Architecture"><a href="#Audio-Queue-Architecture" class="headerlink" title="Audio Queue Architecture"></a>Audio Queue Architecture</h4><p>Audio queue的具体结构有以下几个部分构成：</p>
-<ul>
-<li>A set of <strong>audio queue buffers</strong>, each of which is a temporary repository for some audio data</li>
-<li>A <strong>buffer queue</strong>, an ordered list for the audio queue buffers</li>
-<li>An <strong>audio queue callback</strong> function, that you write</li>
-</ul>
-<p>根据我们使用audio queue的用途（record or play），具体的结构略有不同，仅仅只是callback函数函数的内容不同。</p>
-<h4 id="Audio-Queues-for-Recording"><a href="#Audio-Queues-for-Recording" class="headerlink" title="Audio Queues for Recording"></a>Audio Queues for Recording</h4><p>一个用于record 的audio queue，需要使用<code>AudioQueueNewInput</code>方法创建，它的具体结构如图：</p>
-<p><img src="https://developer.apple.com/library/prerelease/content/documentation/MusicAudio/Conceptual/AudioQueueProgrammingGuide/Art/recording_architecture_2x.png" alt="A recording audio queue"></p>
-<h4 id="Audio-Queues-for-Playback"><a href="#Audio-Queues-for-Playback" class="headerlink" title="Audio Queues for Playback"></a>Audio Queues for Playback</h4><p>一个用于play的audio queue，需要使用<code>AudioQueueNewOutput</code>函数创建，</p>
-<p><img src="https://developer.apple.com/library/prerelease/content/documentation/MusicAudio/Conceptual/AudioQueueProgrammingGuide/Art/playback_architecture_2x.png" alt="A playback audio queue"></p>
-<h4 id="Audio-Queue-Buffers"><a href="#Audio-Queue-Buffers" class="headerlink" title="Audio Queue Buffers"></a>Audio Queue Buffers</h4><p><strong>audio queue buffer</strong>的数据结构如下：</p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> AudioQueueBuffer &#123;</div><div class="line">    <span class="keyword">const</span> <span class="built_in">UInt32</span>   mAudioDataBytesCapacity;</div><div class="line">    <span class="keyword">void</span> *<span class="keyword">const</span>    mAudioData;</div><div class="line">    <span class="built_in">UInt32</span>         mAudioDataByteSize;</div><div class="line">    <span class="keyword">void</span>           *mUserData;</div><div class="line">&#125; AudioQueueBuffer;</div><div class="line"><span class="keyword">typedef</span> AudioQueueBuffer *AudioQueueBufferRef;</div></pre></td></tr></table></figure>
-<p>其中<strong>mAudioData</strong>字段表示这个buffer中的有用数据的地址，其他的字段用来辅助audio queue来管理使用这个buffer。一个audio queue可以使用任何数目的buffers。但是我们一般选择3个，比较好管理。</p>
-<p>Audio queue通过下面的方式管理它们内部的buffers：</p>
-<ul>
-<li>An audio queue allocates a buffer when you call the AudioQueueAllocateBuffer function.</li>
-<li>When you release an audio queue by calling the AudioQueueDispose function, the queue releases its buffers.</li>
-</ul>
-<h3 id="The-Buffer-Queue-and-Enqueuing"><a href="#The-Buffer-Queue-and-Enqueuing" class="headerlink" title="The Buffer Queue and Enqueuing"></a>The Buffer Queue and Enqueuing</h3><p>buffer queue是由audio buffers组成的，是audio queue中的buffers。我们前面介绍了audio queue是如何使用callback管理内部的buffers。不论当前是用于record或者是pleyback，将buffer放到audio queue都是需要我们在callback函数中去手动调用的。</p>
-<h4 id="The-Recording-Process"><a href="#The-Recording-Process" class="headerlink" title="The Recording Process"></a>The Recording Process</h4><p><img src="https://developer.apple.com/library/prerelease/content/documentation/MusicAudio/Conceptual/AudioQueueProgrammingGuide/Art/recording_callback_function_2x.png" alt="The recording process"></p>
-<ol>
-<li>In step 1 , recording begins. The audio queue fills a buffer with acquired data.</li>
-<li>In step 2, the first buffer has been filled. The audio queue invokes the callback, handing it the full buffer (buffer 1). The callback (step 3) writes the contents of the buffer to an audio file. At the same time, the audio queue fills another buffer (buffer 2) with freshly acquired data.</li>
-<li>In step 4, the callback enqueues the buffer (buffer 1) that it has just written to disk, putting it in line to be filled again. The audio queue again invokes the callback (step 5), handing it the next full buffer (buffer 2). The callback (step 6) writes the contents of this buffer to the audio file. This looping steady state continues until the user stops the recording.</li>
-</ol>
-<h4 id="The-Playback-Process"><a href="#The-Playback-Process" class="headerlink" title="The Playback Process"></a>The Playback Process</h4><p><img src="https://developer.apple.com/library/prerelease/content/documentation/MusicAudio/Conceptual/AudioQueueProgrammingGuide/Art/playback_callback_function_2x.png" alt="The playback process"></p>
-<h4 id="Controlling-the-Playback-Process"><a href="#Controlling-the-Playback-Process" class="headerlink" title="Controlling the Playback Process"></a>Controlling the Playback Process</h4><p>Audio queue buffers在queue是顺序播放的，我们可以通<code>theAudioQueueEnqueueBufferWithParameters</code>方法来进行控制</p>
-<h3 id="The-Audio-Queue-Callback-Function"><a href="#The-Audio-Queue-Callback-Function" class="headerlink" title="The Audio Queue Callback Function"></a>The Audio Queue Callback Function</h3><p>Audio queue在运行过程中会不断的调用callback函数，通常间隔时间和audio queue buffer的大小相关，一般是几秒一次。</p>
-<p>audio queue callback主要任务是将audio queue buffer归还给audio queue。callback中通过<code>AudioQueueEnqueueBuffer</code>方法将buffer加载到audio queue的最后。在playback中，可以使用<code>AudioQueueEnqueueBufferWithParameters</code>在enqueue的过程中进行更多的控制。</p>
-<h4 id="The-Recording-Audio-Queue-Callback-Function"><a href="#The-Recording-Audio-Queue-Callback-Function" class="headerlink" title="The Recording Audio Queue Callback Function"></a>The Recording Audio Queue Callback Function</h4><p>如果你仅仅使用audio queue去将record的audio data写入file system，callback的方法实现的原型如下：</p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">AudioQueueInputCallback (</div><div class="line">    <span class="keyword">void</span>                               *inUserData,</div><div class="line">    AudioQueueRef                      inAQ,</div><div class="line">    AudioQueueBufferRef                inBuffer,</div><div class="line">    <span class="keyword">const</span> AudioTimeStamp               *inStartTime,</div><div class="line">    <span class="built_in">UInt32</span>                             inNumberPacketDescriptions,</div><div class="line">    <span class="keyword">const</span> AudioStreamPacketDescription *inPacketDescs</div><div class="line">);</div></pre></td></tr></table></figure>
-<p>一个recording audio queue会触发我们注册的callback，会在callback的参数中传入所有需要的关于audio data的相关信息：</p>
-<ul>
-<li><strong>inUserData</strong> 是一个自定义的结构体，用来存储audio queueu以及audio queue buffer的状态信息，也包括AudioFileID，audio data format等。</li>
-<li><strong>inAQ</strong> 表示哪个audio queue触发这个callback。</li>
-<li><strong>inBuffer</strong> 是一个audio queue buffer，它的内容是由audio queue填充的，内部包括最新的audio data。并且这些audio data已经根据初始化时候传递的格式参数格式化好的数据。</li>
-<li><strong>inStartTime</strong> 表示这个buffer中的第一个采样的采样时间点，一般app中不太需要这个参数。</li>
-<li><strong>inNumberPacketDescriptions</strong> 表示<strong>inPacketDescs</strong>参数中的packet descriptions的个数。如果你是录入VBR format，audio queue就会在callback中提供这个参数，如果是CBR，audio queue就不会使用packet descriptions参数，这个参数会是NULL。</li>
-<li><strong>inPacketDescs</strong> 表示buffer中samples相关的一系列的packet descriptions。是否设置同上一个参数。</li>
-</ul>
-<h4 id="The-Playback-Audio-Queue-Callback-Function"><a href="#The-Playback-Audio-Queue-Callback-Function" class="headerlink" title="The Playback Audio Queue Callback Function"></a>The Playback Audio Queue Callback Function</h4><p>这个片段会介绍如果使用playing audio queue，那么callback应该的信息：</p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">AudioQueueOutputCallback (</div><div class="line">    <span class="keyword">void</span>                  *inUserData,</div><div class="line">    AudioQueueRef         inAQ,</div><div class="line">    AudioQueueBufferRef   inBuffer</div><div class="line">);</div></pre></td></tr></table></figure>
-<p>一个playback audio queue会触发这个callback，提供一些关于audio data的有用信息：</p>
-<ul>
-<li><strong>inUserData</strong> 见上</li>
-<li><strong>inAQ</strong> 表示哪个audio queue触发这个callback。</li>
-<li><strong>inBuffer</strong> 表示被audio queue设置为空的audio queue buffer，你需要在callback中将其内部信息填满，填充内容是你从AudioFile中读取的audio data。</li>
-</ul>
-<hr>
-<h3 id="Using-Codecs-and-Audio-Data-Formats"><a href="#Using-Codecs-and-Audio-Data-Formats" class="headerlink" title="Using Codecs and Audio Data Formats"></a>Using Codecs and Audio Data Formats</h3><p>我们日常使用Audio Queue Services时，都会使用codecs（audio data coding/decoding componets）用来在不同audio format之间进行转化。</p>
-<p>每个audio queue都有一个audio data format，可以在<code>AudioStreamBasicDescription</code>结构体中得到。当我们在ASBD中指定了<code>mFormatID</code>以后，audio queue在向buffer中填充数据时候就会使用相应的codec。同样如果指定sample rate和channel count，audio queue也会同样。具体的过程见下图：</p>
-<p><img src="https://developer.apple.com/library/ios/documentation/MusicAudio/Conceptual/AudioQueueProgrammingGuide/Art/recording_codec_2x.png" alt="Audio format conversion during recording"></p>
-<ul>
-<li>第一步中，app会告知audio queue开始record，同时告诉它使用的的data format。</li>
-<li>第二步中，audio queue将获取到的new data使用codec转化成目标format。然后audio queue会调用callback函数，传入格式化以后的audio data。</li>
-<li>第三步中，callback函数会将格式化以后的audio data写入file中。</li>
-</ul>
-<p>整个过程中，callback函数压根就不需要知道data fromat是什么。</p>
-<p><img src="https://developer.apple.com/library/ios/documentation/MusicAudio/Conceptual/AudioQueueProgrammingGuide/Art/playback_codec_2x.png" alt="Audio format conversion during playback"></p>
-<p>在播放过程中，正好和录音过程相反，只需要在创建audio queue时候将data format告知即可。</p>
-<hr>
-<h3 id="Audio-Queue-Control-and-State"><a href="#Audio-Queue-Control-and-State" class="headerlink" title="Audio Queue Control and State"></a>Audio Queue Control and State</h3><p>audio queue在创建和销毁的过程有一个声明周期。app需要管理它的声明周期，控制它的状态，具体控制状态的方法如下：</p>
-<ul>
-<li>Start (<code>AudioQueueStart</code>).初始化audio queue用来record或者playback。</li>
-<li>Prime (<code>AudioQueuePrime</code>).对于playback，在调用<code>AudioQueueStart</code>挚爱去哪调用确保数据可用，这个方法和record没有关系。</li>
-<li>Stop (<code>AudioQueueStop</code>). 调用以后会重置audio queue，然后会停止record或者playback。在playback应用中，一般在没有audio data可以播放时候调用。</li>
-<li>Pause (<code>AudioQueuePause</code>). 在record或者playback中调用这个方法不会影响到buffers。如果需要恢复，调用<code>AudioQueueStart</code>。</li>
-<li>Flush (<code>AudioQueueFlush</code>). 在enqueue最后一个audio queue buffer以后调用这个方法，确保所有的数据被record或者play（主要是在midst processing的数据）。</li>
-<li>Reset (<code>AudioQueueReset</code>). 调用以后立即停止audio queue，然后将所有的buffers移除，重置所有的DSP状态等到。</li>
-</ul>
-<p>在调用<code>AudioQueueStop</code>方法时候有两种模式：同步和异步。</p>
-<ul>
-<li>Synchronous stopping happens immediately, without regard for previously buffered audio data.</li>
-<li>Asynchronous stopping happens after all queued buffers have been played or recorded.</li>
-</ul>
-<hr>
-<h2 id="Recording-Audio"><a href="#Recording-Audio" class="headerlink" title="Recording Audio"></a>Recording Audio</h2><p>当我们的record使用Audio Queue Services，存储的路径可以是磁盘上的任何地方，或者网络，或者内存中。这部分内容记录大多数的使用场景，存储在磁盘中。</p>
-<p>具体的步骤如下：</p>
-<ol>
-<li>定义一个结构体去存储状态，format，文件路径等信息。</li>
-<li>完成audio queue callback函数，其中将record以后的数据进行存储。</li>
-<li>为audio queue buffers计算出合适的大小，并且在file中写入magic cookies。</li>
-<li>初始化自定义的结构体</li>
-<li>创建recording audio queue，然后给它创建3个audio queue buffers，然后创建一个file用来存储record以后的audio data。</li>
-<li>启动audio queue</li>
-<li>当audio queue停止以后，dispose它以及buffers</li>
-</ol>
-<p>具体的实现内容可以参考Apple官方文档：<a href="https://developer.apple.com/library/prerelease/content/documentation/MusicAudio/Conceptual/AudioQueueProgrammingGuide/AQRecord/RecordingAudio.html" target="_blank" rel="external">Recording Audio</a>。</p>
-<h2 id="Playing-Audio"><a href="#Playing-Audio" class="headerlink" title="Playing Audio"></a>Playing Audio</h2><p>当我们使用Audio Queue Service去play audio时，音频源文件可以是任何在disk file或者memory中，这部分内容是如何用Audio Queue Service播放存储在disk上的audio file。</p>
-<p>具体的步骤如下：</p>
-<ol>
-<li>定义一个结构体管理Audio queue的状态，format，file path等</li>
-<li>完成audio queue callback函数去进行实际的播放</li>
-<li>创建一个函数用来计算最适合的audio queue buffer的大小</li>
-<li>打开audio file，确定它的audio data format</li>
-<li>创建audio queue，对它进行配置</li>
-<li>为audio queue创建buffers，然后启动audio queue，当播放结束，callback让audio queue停止播放</li>
-<li>销毁audio queue</li>
-</ol>
-<p>具体的实现内容可以参考Apple官方文档：<a href="https://developer.apple.com/library/prerelease/content/documentation/MusicAudio/Conceptual/AudioQueueProgrammingGuide/AQPlayback/PlayingAudio.html" target="_blank" rel="external">Playing Audio</a>。</p>
-<h2 id="可运行的Demo"><a href="#可运行的Demo" class="headerlink" title="可运行的Demo"></a>可运行的Demo</h2><p>请参考我的github: <a href="https://github.com/brownfeng/AudioQueueServiceDemo" target="_blank" rel="external">https://github.com/brownfeng/AudioQueueServiceDemo</a></p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/08/27/popToViewController的坑/" itemprop="url">
-                  popToViewController的坑
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-08-27T00:19:12+08:00" content="2016-08-27">
-              2016-08-27
-            </time>
-          </span>
-
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/08/27/popToViewController的坑/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/08/27/popToViewController的坑/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>在使用popViewController时候遇到了两个比较隐蔽的问题.因此,在以后的开发中需要自己注意.</p>
-<h3 id="tips1"><a href="#tips1" class="headerlink" title="tips1"></a>tips1</h3><p>在调用popViewController时,使用GCD丢到main queue中去执行:</p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(<span class="number">0.1</span> * <span class="built_in">NSEC_PER_SEC</span>)), dispatch_get_main_queue(), ^&#123;</div><div class="line">	...</div><div class="line">   [<span class="keyword">self</span>.navigationController popViewControllerAnimated:<span class="literal">NO</span>];</div><div class="line">	...</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
-<h3 id="tips2"><a href="#tips2" class="headerlink" title="tips2"></a>tips2</h3><p>在代码中可能连续多次调用<code>popViewControllerAnimated</code>地方,最好通过遍历<code>navigationController.viewControllers</code>找到具体要遍历到哪个再直接pop到目标<code>controller</code>.</p>
-<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(<span class="number">0.1</span> * <span class="built_in">NSEC_PER_SEC</span>)), dispatch_get_main_queue(), ^&#123;</div><div class="line">    <span class="built_in">BOOL</span> findIt = <span class="literal">NO</span>;</div><div class="line">    <span class="built_in">UIViewController</span> *targetVC = <span class="literal">nil</span>;</div><div class="line">    <span class="keyword">for</span> (<span class="built_in">UIViewController</span> *subVC <span class="keyword">in</span> <span class="keyword">self</span>.navigationController.viewControllers) &#123;</div><div class="line">        <span class="keyword">if</span> (findIt) &#123;</div><div class="line">            <span class="keyword">break</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">if</span> (subVC == xxx) &#123;</div><div class="line">            findIt = <span class="literal">YES</span>;</div><div class="line">        &#125;<span class="keyword">else</span>&#123;</div><div class="line">            targetVC = subVC;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">	[<span class="keyword">self</span>.navigationController popToViewController:targetVC animated:<span class="literal">NO</span>];</div><div class="line"></div><div class="line">&#125;);</div></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/08/27/iOS音频系列(四)/" itemprop="url">
-                  iOS音频系列(四)--音频的文件格式和数据格式
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-08-27T00:19:12+08:00" content="2016-08-27">
-              2016-08-27
-            </time>
-          </span>
-
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/08/27/iOS音频系列(四)/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/08/27/iOS音频系列(四)/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>在音频开发中 .WAVs和.MP3有什么不同呢,或者还有的.AAC和.CAF之前又有什么区别呢,这些概念在这篇文章以后应该会有一定的理解.</p>
-<h3 id="文件格式和数据格式"><a href="#文件格式和数据格式" class="headerlink" title="文件格式和数据格式"></a>文件格式和数据格式</h3><p>如果要理解每一个音频文件,就需要了解它的两个部分的内容:文件格式和数据格式.文件格式又称为音频容器,数据格式又可以认为是编码格式.</p>
-<p>文件格式(音频容器)描述的是存储在文件系统的文件的本身,而存储在文件中的音频数据是可以被编码成各种各样的格式的.比如,我们常见的CAF文件是一个文件格式(音频容器),它可以用来存储音频编码格式为MP3,LPCM或者其他的音频编码格式.</p>
-<h3 id="音频数据格式-音频编码"><a href="#音频数据格式-音频编码" class="headerlink" title="音频数据格式(音频编码)"></a>音频数据格式(音频编码)</h3><p>这里先来理解音频编码,在音频相关的内容中,音频编码是最重要的.</p>
-<p>iPhone中支持的音频格式如下:</p>
-<p>AAC: 被设计用来取代MP3音频编码的.它会压缩原来的声音,因此会减少存储空间.实际中ACC比MP3更好的压缩率.</p>
-<p>AMR: AMR是一个编码格式用于压缩语音的音频编码格式.</p>
-<p>linear PCM: 是标准的线性脉冲编码,一般是将模拟声音转化成数字信号,这是一个未压缩的音频格式.由于是未压缩的音频编码格式,因此播放时候用这种格式最是最好的选择,但是会占用过多的空间.</p>
-<p>MP3: …</p>
-<p>IMA4: …未压缩</p>
-<p>…</p>
-<h3 id="该选哪个数据音频格式"><a href="#该选哪个数据音频格式" class="headerlink" title="该选哪个数据音频格式"></a>该选哪个数据音频格式</h3><p>首先明确自己有哪些需求:</p>
-<ul>
-<li>如果用于播放的音频,选用LPCM,IMA4等其他的未压缩或者轻度压缩的音频格式.</li>
-<li>如果使用压缩率较高的AAC,MP3等这些iPhone直接硬件支持快速解码(解压缩).但是,硬件解码时候每次只支持一个文件.因此,如果需要同时播放多个需要解码(解压缩)的文件,就需要通过代码进行软件解码,非常慢.</li>
-</ul>
-<p>所以如何选择数据音频格式,这里有些建议:</p>
-<ul>
-<li>如果空间足够,那么最好使用的音频编码格式使用LPCM.不仅播放最快,而且可以同时播放多个音乐而不太占用CPU的资源.</li>
-<li>如果对空间有要求,最好使用ACC音频编码来进行音乐的播放,IMA4音频编码进行系统声音的编码.</li>
-</ul>
-<h3 id="多种LPCM的变体"><a href="#多种LPCM的变体" class="headerlink" title="多种LPCM的变体"></a>多种LPCM的变体</h3><p>对于LPCM音频编码是iPhone中使用非压缩音频数据最好的数据格式.同时,根据具体的存储方式,又有多种变种.音频数据可以存储于大端或者小端模式,用float或者integer存储,也可以使用不同的bit-width存储.</p>
-<p>而在iPhone中,使用的最平凡的是:little-endian integer 16bit(或者LEI16 short类型)的格式.在Mac中,使用native-endian(和电脑一致) float point 32bit.如果是在Mac上生成音频数据,那么最好生成合适的格式,再转化成iPhone使用的格式.</p>
-<h3 id="文件格式-音频容器"><a href="#文件格式-音频容器" class="headerlink" title="文件格式(音频容器)"></a>文件格式(音频容器)</h3><p>iPhone支持许多文件格式(音频容器)包括:MPEG-1(.mp3),MPEG-2 ADTS(.aac),AIFF,CAF,WAVE等.但是通常在iPhone中使用的容器格式就CAF,因为它可以用来封装iPhone所支持的所有音频格式.</p>
-<h3 id="Bit-Rates比特率"><a href="#Bit-Rates比特率" class="headerlink" title="Bit Rates比特率"></a>Bit Rates比特率</h3><p>比特率是一个和音频数据格式关系密切的概念.</p>
-<p>音频文件的比特率就是只单位时间内传送的bit数,单位是bit/s,kbit/s.更高的比特率会导致更大的文件.我们在使用有些音频数据格式例如AAC或者MP3时,需要我们去设置比特率,这个参数与音频格式在压缩过程的压缩率有关.当我们让比特率变低,那么音频质量就会更差.</p>
-<blockquote>
-<p>注释: 1kbit/s = 1000bit/s,而不是1024bit/s</p>
-</blockquote>
-<p>我们需要权衡比特率的大小和声音文件的质量,选择合适的比特率.如果我们使用的是语音声音,那么比特率可以适当低一点.</p>
-<p>下面是常见的比特率:</p>
-<ul>
-<li>32kbit/s: AM 无限电广播的质量</li>
-<li>48kbit/s: 很长的语音对话</li>
-<li>64kbit/s: 正常长度的语音对话的比特率</li>
-<li>96kbit/s: FM广播</li>
-<li>128kbit/s: MP3音乐</li>
-<li>329kbit/s: CD的比特率</li>
-<li>500kbit/s~1411kbit/s: 无损音频编码格式,比如LPCM</li>
-</ul>
-<h3 id="采样率"><a href="#采样率" class="headerlink" title="采样率"></a>采样率</h3><p>最后一个专业术语:采样率.可以见前面的文章.</p>
 
           
         
@@ -1286,6 +688,500 @@
             
               
                 
+                <a class="post-title-link" href="/2016/08/27/iOS音频系列(四)/" itemprop="url">
+                  iOS音频系列(四)--音频的文件格式和数据格式
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-08-27T00:19:12+08:00" content="2016-08-27">
+              2016-08-27
+            </time>
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/08/27/iOS音频系列(四)/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/08/27/iOS音频系列(四)/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>在音频开发中 .WAVs和.MP3有什么不同呢,或者还有的.AAC和.CAF之前又有什么区别呢,这些概念在这篇文章以后应该会有一定的理解.</p>
+<h3 id="文件格式和数据格式"><a href="#文件格式和数据格式" class="headerlink" title="文件格式和数据格式"></a>文件格式和数据格式</h3><p>如果要理解每一个音频文件,就需要了解它的两个部分的内容:文件格式和数据格式.文件格式又称为音频容器,数据格式又可以认为是编码格式.</p>
+<p>文件格式(音频容器)描述的是存储在文件系统的文件的本身,而存储在文件中的音频数据是可以被编码成各种各样的格式的.比如,我们常见的CAF文件是一个文件格式(音频容器),它可以用来存储音频编码格式为MP3,LPCM或者其他的音频编码格式.</p>
+<h3 id="音频数据格式-音频编码"><a href="#音频数据格式-音频编码" class="headerlink" title="音频数据格式(音频编码)"></a>音频数据格式(音频编码)</h3><p>这里先来理解音频编码,在音频相关的内容中,音频编码是最重要的.</p>
+<p>iPhone中支持的音频格式如下:</p>
+<p>AAC: 被设计用来取代MP3音频编码的.它会压缩原来的声音,因此会减少存储空间.实际中ACC比MP3更好的压缩率.</p>
+<p>AMR: AMR是一个编码格式用于压缩语音的音频编码格式.</p>
+<p>linear PCM: 是标准的线性脉冲编码,一般是将模拟声音转化成数字信号,这是一个未压缩的音频格式.由于是未压缩的音频编码格式,因此播放时候用这种格式最是最好的选择,但是会占用过多的空间.</p>
+<p>MP3: …</p>
+<p>IMA4: …未压缩</p>
+<p>…</p>
+<h3 id="该选哪个数据音频格式"><a href="#该选哪个数据音频格式" class="headerlink" title="该选哪个数据音频格式"></a>该选哪个数据音频格式</h3><p>首先明确自己有哪些需求:</p>
+<ul>
+<li>如果用于播放的音频,选用LPCM,IMA4等其他的未压缩或者轻度压缩的音频格式.</li>
+<li>如果使用压缩率较高的AAC,MP3等这些iPhone直接硬件支持快速解码(解压缩).但是,硬件解码时候每次只支持一个文件.因此,如果需要同时播放多个需要解码(解压缩)的文件,就需要通过代码进行软件解码,非常慢.</li>
+</ul>
+<p>所以如何选择数据音频格式,这里有些建议:</p>
+<ul>
+<li>如果空间足够,那么最好使用的音频编码格式使用LPCM.不仅播放最快,而且可以同时播放多个音乐而不太占用CPU的资源.</li>
+<li>如果对空间有要求,最好使用ACC音频编码来进行音乐的播放,IMA4音频编码进行系统声音的编码.</li>
+</ul>
+<h3 id="多种LPCM的变体"><a href="#多种LPCM的变体" class="headerlink" title="多种LPCM的变体"></a>多种LPCM的变体</h3><p>对于LPCM音频编码是iPhone中使用非压缩音频数据最好的数据格式.同时,根据具体的存储方式,又有多种变种.音频数据可以存储于大端或者小端模式,用float或者integer存储,也可以使用不同的bit-width存储.</p>
+<p>而在iPhone中,使用的最平凡的是:little-endian integer 16bit(或者LEI16 short类型)的格式.在Mac中,使用native-endian(和电脑一致) float point 32bit.如果是在Mac上生成音频数据,那么最好生成合适的格式,再转化成iPhone使用的格式.</p>
+<h3 id="文件格式-音频容器"><a href="#文件格式-音频容器" class="headerlink" title="文件格式(音频容器)"></a>文件格式(音频容器)</h3><p>iPhone支持许多文件格式(音频容器)包括:MPEG-1(.mp3),MPEG-2 ADTS(.aac),AIFF,CAF,WAVE等.但是通常在iPhone中使用的容器格式就CAF,因为它可以用来封装iPhone所支持的所有音频格式.</p>
+<h3 id="Bit-Rates比特率"><a href="#Bit-Rates比特率" class="headerlink" title="Bit Rates比特率"></a>Bit Rates比特率</h3><p>比特率是一个和音频数据格式关系密切的概念.</p>
+<p>音频文件的比特率就是只单位时间内传送的bit数,单位是bit/s,kbit/s.更高的比特率会导致更大的文件.我们在使用有些音频数据格式例如AAC或者MP3时,需要我们去设置比特率,这个参数与音频格式在压缩过程的压缩率有关.当我们让比特率变低,那么音频质量就会更差.</p>
+<blockquote>
+<p>注释: 1kbit/s = 1000bit/s,而不是1024bit/s</p>
+</blockquote>
+<p>我们需要权衡比特率的大小和声音文件的质量,选择合适的比特率.如果我们使用的是语音声音,那么比特率可以适当低一点.</p>
+<p>下面是常见的比特率:</p>
+<ul>
+<li>32kbit/s: AM 无限电广播的质量</li>
+<li>48kbit/s: 很长的语音对话</li>
+<li>64kbit/s: 正常长度的语音对话的比特率</li>
+<li>96kbit/s: FM广播</li>
+<li>128kbit/s: MP3音乐</li>
+<li>329kbit/s: CD的比特率</li>
+<li>500kbit/s~1411kbit/s: 无损音频编码格式,比如LPCM</li>
+</ul>
+<h3 id="采样率"><a href="#采样率" class="headerlink" title="采样率"></a>采样率</h3><p>最后一个专业术语:采样率.可以见前面的文章.</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/08/27/iOS音频系列(一)/" itemprop="url">
+                  iOS音频系列(一)--音频基础
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-08-27T00:19:12+08:00" content="2016-08-27">
+              2016-08-27
+            </time>
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/08/27/iOS音频系列(一)/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/08/27/iOS音频系列(一)/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>前些日子由于项目需要,一直在研究iOS CoreAudio相关的内容.在这里记录一些笔记.现实生活中，我们听到的声音都是时间连续的，我们称为这种信号叫模拟信号。模拟信号需要进行数字化以后才能在计算机中使用。数字化的过程如下：</p>
+<p><code>采样 -&gt; 量化 -&gt; 编码</code></p>
+<p>通过获取间隔相同时间的某个模拟信号的值，然后对这些采样以后得到的值进行量化，然后使用一定的bit进行编码存储，整个过程结束后就会输出PCM数据。在iOS的Core Audio Services中使用的音频数据只能是线性PCM格式的音频数据，这是一种未进过压缩的音频数据格式。要理解整个过程就需要理解多个重要概念：采样频率和采样位数，比特率等。</p>
+<h3 id="采样频率"><a href="#采样频率" class="headerlink" title="采样频率"></a>采样频率</h3><p>采样频率是指单位时间内对声音模拟信号的采样次数。采样率类似于视频的帧数，比如电影的采样率是24Hz。当我们把采样到的一个个静止画面再以采样率同样的速度回放时，看到的就是连续的画面。同样的道理，把以44.1kHZ采样率记录的CD以同样的速率播放时，就能听到连续的声音。显然，这个采样率越高，听到的声音和看到的图像就越连贯。当然，人的听觉和视觉器官能分辨的采样率是有限的。对同一段声音，用20kHz和44.1kHz来采样，重放时，可能可以听出其中的差别，而基本上高于44.1kHZ采样的声音，比如说96kHz采样，绝大部分人已经觉察不到两种采样出来的声音的分别了。之所以使用44.1kHZ这个数值是因为经过了反复实验，人们发现这个采样精度最合适，低于这个值就会有较明显的损失，而高于这个值人的耳朵已经很难分辨，而且增大了数字音频所占用的空间。我们所使用的CD的采样标准就是44.1k。</p>
+<h3 id="采样位数"><a href="#采样位数" class="headerlink" title="采样位数"></a>采样位数</h3><p>采样位数可以理解为采集卡处理声音的解析度。这个数值越大，解析度就越高，录制和回放的声音就越真实。我们首先要知道：电脑中的声音文件是用数字0和1来表示的。连续的模拟信号按一定的采样频率经数码脉冲取样后，每一个离散的脉冲信号被以一定的量化精度量化成一串二进制编码流，这串编码流的位数即为采样位数，也称为量化精度。</p>
+<p>在电脑上录音的本质就是把模拟声音信号转换成数字信号。反之，在播放时则是把数字信号还原成模拟声音信号输出。采集卡的位是指采集卡在采集和播放声音文件时所使用数字声音信号的二进制位数。采集卡的位客观地反映了数字声音信号对输入声音信号描述的准确程度。例如，同一段音频信息，使用8bit描述单个采样信息，那么采样量化的范围就是0~255,如果使用16bit表示单个采样值,那么相应的采样量化的范围为0~64k。与8位采样位数相比，16位采样的动态范围的宽度更小，动态范围更宽广，声音的被记录的更加精细。一般CD使用的采样位数为16位。</p>
+<p>16位二进制数的最小值是0000000000000000，最大值是1111111111111111，对应的十进制数就是0和65535，也就是最大和最小值之间的差值是65535，也就是说，它量化的模拟量的动态范围可以差65535，也就是96.32分贝（20 * lg65535）），所以，量化精度只和动态范围有关，和频率响应没关系。动态范围定在96分贝也是有道理的，人耳的无痛苦极限声压是90分贝，96分贝的动态范围在普通应用中足够使用，所以96分贝动态范围内的模拟波，经量化后，不会产生削波失真的。</p>
+<blockquote>
+<p>所谓分贝是指两个相同的物理量（例A1和A0）之比取以10为底的对数并乘以10（或20）。N = 10lg(A1/A0) 分贝符号为”dB”，它是无量纲的。式中A0是基准量（或参考量），A是被量度量。被量度量和基准量之比取对数，这对数值称为被量度量的”级”。亦即用对数标度时，所得到的是比值，它代表被量度量比基准量高出多少”级”。</p>
+</blockquote>
+<h3 id="位速-比特率-码率"><a href="#位速-比特率-码率" class="headerlink" title="位速/比特率/码率"></a>位速/比特率/码率</h3><p>位速/比特率/码率描述的都是一个东西，是指在一个数据流中每秒钟能通过的信息量。我们可能看到过音频文件用 “128–Kbps MP3” 或 “64–Kbps WMA” 进行描述的情形。Kbps 表示 “每秒千位数”，因此数值越大表示数据越多：128–Kbps MP3 音频文件包含的数据量是 64–Kbps WMA 文件的两倍，并占用两倍的空间。（不过在这种情况下，这两种文件听起来没什么两样。原因是什么呢？有些文件格式比其他文件能够更有效地利用数据， 64–Kbps WMA 文件的音质与 128–Kbps MP3 的音质相同。）需要了解的重要一点是，位速越高，信息量越大，对这些信息进行解码的处理量就越大，文件需要占用的空间也就越多。</p>
+<p>从码率的计算公式中可以清楚的看出码率和采样位数的关系:</p>
+<p><code>码率=取样频率×量化精度×声道数</code></p>
+<blockquote>
+<p>一张CD,双声道,采样率44.1kHz，每个采样位数13bit，时长74分钟(4440秒)，则CD的容量为<code>13*2*44100*4440</code>约等于<code>640MB</code>。</p>
+</blockquote>
+<h3 id="VBR、ABR、CBR"><a href="#VBR、ABR、CBR" class="headerlink" title="VBR、ABR、CBR"></a>VBR、ABR、CBR</h3><p>VBR(Variable Bitrate)动态比特率。也就是没有固定的比特率，压缩软件在压缩时根据音频数据即时确定使用什么比特率。这是新发展的算法，他们将一首歌的复杂部分用高Bitrate编码，简单部分用低Bitrate编码。主意虽然不错，可惜新编码器的VBR算法很差，音质与CBR相去甚远。幸运的是， Lame完美地优化了VBR算法，使之成为MP3的最佳编码模式。这是以质量为前提兼顾文件大小的方式，推荐编码模式。</p>
+<p>ABR(Average Bitrate)平均比特率，是VBR的一种插值参数。Lame针对CBR不佳的文件体积比和VBR生成文件大小不定的特点独创了这种编码模式。ABR也被称为“Safe VBR”，它是在指定的平均Bitrate内，以每50帧(30帧约1秒)为一段，低频和不敏感频率使用相对低的流量，高频和大动态表现时使用高流量。举例来说，当指定用192kbps ABR对一段wav文件进行编码时，Lame会将该文件的85%用192kbps固定编码，然后对剩余15%进行动态优化：复杂部分用高于192kbps 来编码、简单部分用低于192kbps来编码。与192kbps CBR相比，192kbps ABR在文件大小上相差不多，音质却提高不少。ABR编码在速度上是VBR编码的2到3倍，在128-256kbps范围内质量要好于CBR。可以做为 VBR和CBR的一种折衷选择。</p>
+<p>CBR(Constant Bitrate)，常数比特率，指文件从头到尾都是一种位速率。相对于VBR和ABR来讲，它压缩出来的文件体积很大，但音质却不会有明显的提高。</p>
+<h3 id="PCM格式与LPCM格式"><a href="#PCM格式与LPCM格式" class="headerlink" title="PCM格式与LPCM格式"></a>PCM格式与LPCM格式</h3><p>PCM（脉冲编码调制）是一种将模拟语音信号变换为数字信号的编码方式。主要经过3个过程：抽样、量化和编码。抽样过程将连续时间模拟信号变为离散时间、连续幅度的抽样信号，量化过程将抽样信号变为离散时间、离散幅度的数字信号，编码过程将量化后的信号编码成为一个二进制码组输出。</p>
+<p>量化分为线性量化和非线性量化。线性量化在整个量化范围内，量化间隔均相等，称为LPCM。非线性量化采用不等的量化间隔。量化间隔数由编码的二进制位数决定。例如，CD采用16bit线性量化，则量化间隔数L=65536。位数（n)越多，精度越高，信噪比<code>SNR=6.02n+1.76</code>(dB)也越高。但编码的二进制位数不是无限制的，需要根据所需的数据率确定。比如：CD可以达到的数据率为2×44.1×16=1411.2Kbit/s。</p>
+<p>总而言之，LPCM格式中的音频数据是未压缩的线性量化后的音频数据。</p>
+<blockquote>
+<p>用iOS的官方文档中对几个关键词的解释：</p>
+<ul>
+<li>A sample is single numerical value for a single channel.</li>
+<li>A frame is a collection of time-coincident samples. For instance, a stereo sound file has two samples per frame, one for the left channel and one for the right channel.</li>
+<li>A packet is a collection of one or more contiguous frames. In linear PCM audio, a packet is always a single frame. In compressed formats, it is typically more. A packet defines the smallest meaningful set of frames for a given audio data format.</li>
+</ul>
+</blockquote>
+<h3 id="压缩过的音频格式"><a href="#压缩过的音频格式" class="headerlink" title="压缩过的音频格式"></a>压缩过的音频格式</h3><p>在常见的音频格式对PCM原始帧进行封装时也是以frame帧为单位的，我们一般将压缩后的音频数据帧称为媒体帧，对应原始的PCM数据称为原始帧。每个媒体帧又分成head头，body数据体。在帧头中，会存储这个媒体帧中body部分的码率，采样率等解码必须的信息，因此每一个媒体帧都可以独立于文件存在和播放。在body中存储着一个或者多个媒体帧，这些媒体真是若干个PCM原始帧经过特定的压缩算法压缩得到的。通常情况下，我们将单位时间的媒体帧的个数称为帧率。</p>
+<p>上文的采样率和帧率这两个概念都描述了音频媒体的“连续”性，二者的区别在于每个音频的媒体帧中会包含多个音频采样(多个PCM data)，如1个AAC帧中包含1024个采样。</p>
+<blockquote>
+<p>在学习音频/视频相关内容之前,首先需要弄清楚的的是音频的文件类型和音频格式是有本质区别的.封装类型比如.ogg,音频格式比如.mp3.(具体的区别可以百度)</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/08/27/iOS音频系列(三)/" itemprop="url">
+                  iOS音频系列(三)--AudioQueue
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-08-27T00:19:12+08:00" content="2016-08-27">
+              2016-08-27
+            </time>
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/08/27/iOS音频系列(三)/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/08/27/iOS音频系列(三)/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>本篇是AudioQueue的官方文档的笔记。Audio Queue Services可以play和record以下三类任何audio data：</p>
+<ul>
+<li>Linear PCM.</li>
+<li>Any compressed format supported natively on the Apple platform you are developing for.</li>
+<li>Any other format for which a user has an installed codec.</li>
+</ul>
+<p>对于最后一种类型，我们可以在使用AudioQueue同时自己将自己需要的format转化成LPCM。AudioQueue是对mic和speaker的高度抽象，同时可以非常简单的时间音频codecs。与此同时，它也有一些高级功能，例如多个音频的同步播放，回放等等。</p>
+<hr>
+<h2 id="About-Audio-Queues"><a href="#About-Audio-Queues" class="headerlink" title="About Audio Queues"></a>About Audio Queues</h2><p>这章会了解到audio queue的功能，结构体，以及内部运行的机理。具体的内容包括audio queues，audio queue buffers，audio queue会使用到的callback等。还有就是audio queue的状态以及参数。</p>
+<h3 id="What-Is-an-Audio-Queue"><a href="#What-Is-an-Audio-Queue" class="headerlink" title="What Is an Audio Queue?"></a>What Is an Audio Queue?</h3><p>An audio queue 是iOS中play和record audio的对象.底层是<code>AudioQueueRef</code>。Audio queue可以完成以下工作：</p>
+<ul>
+<li>Connecting to audio hardware</li>
+<li>Managing memory</li>
+<li>Employing codecs, as needed, for compressed audio formats</li>
+<li>Mediating recording or playback</li>
+</ul>
+<h4 id="Audio-Queue-Architecture"><a href="#Audio-Queue-Architecture" class="headerlink" title="Audio Queue Architecture"></a>Audio Queue Architecture</h4><p>Audio queue的具体结构有以下几个部分构成：</p>
+<ul>
+<li>A set of <strong>audio queue buffers</strong>, each of which is a temporary repository for some audio data</li>
+<li>A <strong>buffer queue</strong>, an ordered list for the audio queue buffers</li>
+<li>An <strong>audio queue callback</strong> function, that you write</li>
+</ul>
+<p>根据我们使用audio queue的用途（record or play），具体的结构略有不同，仅仅只是callback函数函数的内容不同。</p>
+<h4 id="Audio-Queues-for-Recording"><a href="#Audio-Queues-for-Recording" class="headerlink" title="Audio Queues for Recording"></a>Audio Queues for Recording</h4><p>一个用于record 的audio queue，需要使用<code>AudioQueueNewInput</code>方法创建，它的具体结构如图：</p>
+<p><img src="https://developer.apple.com/library/prerelease/content/documentation/MusicAudio/Conceptual/AudioQueueProgrammingGuide/Art/recording_architecture_2x.png" alt="A recording audio queue"></p>
+<h4 id="Audio-Queues-for-Playback"><a href="#Audio-Queues-for-Playback" class="headerlink" title="Audio Queues for Playback"></a>Audio Queues for Playback</h4><p>一个用于play的audio queue，需要使用<code>AudioQueueNewOutput</code>函数创建，</p>
+<p><img src="https://developer.apple.com/library/prerelease/content/documentation/MusicAudio/Conceptual/AudioQueueProgrammingGuide/Art/playback_architecture_2x.png" alt="A playback audio queue"></p>
+<h4 id="Audio-Queue-Buffers"><a href="#Audio-Queue-Buffers" class="headerlink" title="Audio Queue Buffers"></a>Audio Queue Buffers</h4><p><strong>audio queue buffer</strong>的数据结构如下：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> AudioQueueBuffer &#123;</div><div class="line">    <span class="keyword">const</span> <span class="built_in">UInt32</span>   mAudioDataBytesCapacity;</div><div class="line">    <span class="keyword">void</span> *<span class="keyword">const</span>    mAudioData;</div><div class="line">    <span class="built_in">UInt32</span>         mAudioDataByteSize;</div><div class="line">    <span class="keyword">void</span>           *mUserData;</div><div class="line">&#125; AudioQueueBuffer;</div><div class="line"><span class="keyword">typedef</span> AudioQueueBuffer *AudioQueueBufferRef;</div></pre></td></tr></table></figure>
+<p>其中<strong>mAudioData</strong>字段表示这个buffer中的有用数据的地址，其他的字段用来辅助audio queue来管理使用这个buffer。一个audio queue可以使用任何数目的buffers。但是我们一般选择3个，比较好管理。</p>
+<p>Audio queue通过下面的方式管理它们内部的buffers：</p>
+<ul>
+<li>An audio queue allocates a buffer when you call the AudioQueueAllocateBuffer function.</li>
+<li>When you release an audio queue by calling the AudioQueueDispose function, the queue releases its buffers.</li>
+</ul>
+<h3 id="The-Buffer-Queue-and-Enqueuing"><a href="#The-Buffer-Queue-and-Enqueuing" class="headerlink" title="The Buffer Queue and Enqueuing"></a>The Buffer Queue and Enqueuing</h3><p>buffer queue是由audio buffers组成的，是audio queue中的buffers。我们前面介绍了audio queue是如何使用callback管理内部的buffers。不论当前是用于record或者是pleyback，将buffer放到audio queue都是需要我们在callback函数中去手动调用的。</p>
+<h4 id="The-Recording-Process"><a href="#The-Recording-Process" class="headerlink" title="The Recording Process"></a>The Recording Process</h4><p><img src="https://developer.apple.com/library/prerelease/content/documentation/MusicAudio/Conceptual/AudioQueueProgrammingGuide/Art/recording_callback_function_2x.png" alt="The recording process"></p>
+<ol>
+<li>In step 1 , recording begins. The audio queue fills a buffer with acquired data.</li>
+<li>In step 2, the first buffer has been filled. The audio queue invokes the callback, handing it the full buffer (buffer 1). The callback (step 3) writes the contents of the buffer to an audio file. At the same time, the audio queue fills another buffer (buffer 2) with freshly acquired data.</li>
+<li>In step 4, the callback enqueues the buffer (buffer 1) that it has just written to disk, putting it in line to be filled again. The audio queue again invokes the callback (step 5), handing it the next full buffer (buffer 2). The callback (step 6) writes the contents of this buffer to the audio file. This looping steady state continues until the user stops the recording.</li>
+</ol>
+<h4 id="The-Playback-Process"><a href="#The-Playback-Process" class="headerlink" title="The Playback Process"></a>The Playback Process</h4><p><img src="https://developer.apple.com/library/prerelease/content/documentation/MusicAudio/Conceptual/AudioQueueProgrammingGuide/Art/playback_callback_function_2x.png" alt="The playback process"></p>
+<h4 id="Controlling-the-Playback-Process"><a href="#Controlling-the-Playback-Process" class="headerlink" title="Controlling the Playback Process"></a>Controlling the Playback Process</h4><p>Audio queue buffers在queue是顺序播放的，我们可以通<code>theAudioQueueEnqueueBufferWithParameters</code>方法来进行控制</p>
+<h3 id="The-Audio-Queue-Callback-Function"><a href="#The-Audio-Queue-Callback-Function" class="headerlink" title="The Audio Queue Callback Function"></a>The Audio Queue Callback Function</h3><p>Audio queue在运行过程中会不断的调用callback函数，通常间隔时间和audio queue buffer的大小相关，一般是几秒一次。</p>
+<p>audio queue callback主要任务是将audio queue buffer归还给audio queue。callback中通过<code>AudioQueueEnqueueBuffer</code>方法将buffer加载到audio queue的最后。在playback中，可以使用<code>AudioQueueEnqueueBufferWithParameters</code>在enqueue的过程中进行更多的控制。</p>
+<h4 id="The-Recording-Audio-Queue-Callback-Function"><a href="#The-Recording-Audio-Queue-Callback-Function" class="headerlink" title="The Recording Audio Queue Callback Function"></a>The Recording Audio Queue Callback Function</h4><p>如果你仅仅使用audio queue去将record的audio data写入file system，callback的方法实现的原型如下：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">AudioQueueInputCallback (</div><div class="line">    <span class="keyword">void</span>                               *inUserData,</div><div class="line">    AudioQueueRef                      inAQ,</div><div class="line">    AudioQueueBufferRef                inBuffer,</div><div class="line">    <span class="keyword">const</span> AudioTimeStamp               *inStartTime,</div><div class="line">    <span class="built_in">UInt32</span>                             inNumberPacketDescriptions,</div><div class="line">    <span class="keyword">const</span> AudioStreamPacketDescription *inPacketDescs</div><div class="line">);</div></pre></td></tr></table></figure>
+<p>一个recording audio queue会触发我们注册的callback，会在callback的参数中传入所有需要的关于audio data的相关信息：</p>
+<ul>
+<li><strong>inUserData</strong> 是一个自定义的结构体，用来存储audio queueu以及audio queue buffer的状态信息，也包括AudioFileID，audio data format等。</li>
+<li><strong>inAQ</strong> 表示哪个audio queue触发这个callback。</li>
+<li><strong>inBuffer</strong> 是一个audio queue buffer，它的内容是由audio queue填充的，内部包括最新的audio data。并且这些audio data已经根据初始化时候传递的格式参数格式化好的数据。</li>
+<li><strong>inStartTime</strong> 表示这个buffer中的第一个采样的采样时间点，一般app中不太需要这个参数。</li>
+<li><strong>inNumberPacketDescriptions</strong> 表示<strong>inPacketDescs</strong>参数中的packet descriptions的个数。如果你是录入VBR format，audio queue就会在callback中提供这个参数，如果是CBR，audio queue就不会使用packet descriptions参数，这个参数会是NULL。</li>
+<li><strong>inPacketDescs</strong> 表示buffer中samples相关的一系列的packet descriptions。是否设置同上一个参数。</li>
+</ul>
+<h4 id="The-Playback-Audio-Queue-Callback-Function"><a href="#The-Playback-Audio-Queue-Callback-Function" class="headerlink" title="The Playback Audio Queue Callback Function"></a>The Playback Audio Queue Callback Function</h4><p>这个片段会介绍如果使用playing audio queue，那么callback应该的信息：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">AudioQueueOutputCallback (</div><div class="line">    <span class="keyword">void</span>                  *inUserData,</div><div class="line">    AudioQueueRef         inAQ,</div><div class="line">    AudioQueueBufferRef   inBuffer</div><div class="line">);</div></pre></td></tr></table></figure>
+<p>一个playback audio queue会触发这个callback，提供一些关于audio data的有用信息：</p>
+<ul>
+<li><strong>inUserData</strong> 见上</li>
+<li><strong>inAQ</strong> 表示哪个audio queue触发这个callback。</li>
+<li><strong>inBuffer</strong> 表示被audio queue设置为空的audio queue buffer，你需要在callback中将其内部信息填满，填充内容是你从AudioFile中读取的audio data。</li>
+</ul>
+<hr>
+<h3 id="Using-Codecs-and-Audio-Data-Formats"><a href="#Using-Codecs-and-Audio-Data-Formats" class="headerlink" title="Using Codecs and Audio Data Formats"></a>Using Codecs and Audio Data Formats</h3><p>我们日常使用Audio Queue Services时，都会使用codecs（audio data coding/decoding componets）用来在不同audio format之间进行转化。</p>
+<p>每个audio queue都有一个audio data format，可以在<code>AudioStreamBasicDescription</code>结构体中得到。当我们在ASBD中指定了<code>mFormatID</code>以后，audio queue在向buffer中填充数据时候就会使用相应的codec。同样如果指定sample rate和channel count，audio queue也会同样。具体的过程见下图：</p>
+<p><img src="https://developer.apple.com/library/ios/documentation/MusicAudio/Conceptual/AudioQueueProgrammingGuide/Art/recording_codec_2x.png" alt="Audio format conversion during recording"></p>
+<ul>
+<li>第一步中，app会告知audio queue开始record，同时告诉它使用的的data format。</li>
+<li>第二步中，audio queue将获取到的new data使用codec转化成目标format。然后audio queue会调用callback函数，传入格式化以后的audio data。</li>
+<li>第三步中，callback函数会将格式化以后的audio data写入file中。</li>
+</ul>
+<p>整个过程中，callback函数压根就不需要知道data fromat是什么。</p>
+<p><img src="https://developer.apple.com/library/ios/documentation/MusicAudio/Conceptual/AudioQueueProgrammingGuide/Art/playback_codec_2x.png" alt="Audio format conversion during playback"></p>
+<p>在播放过程中，正好和录音过程相反，只需要在创建audio queue时候将data format告知即可。</p>
+<hr>
+<h3 id="Audio-Queue-Control-and-State"><a href="#Audio-Queue-Control-and-State" class="headerlink" title="Audio Queue Control and State"></a>Audio Queue Control and State</h3><p>audio queue在创建和销毁的过程有一个声明周期。app需要管理它的声明周期，控制它的状态，具体控制状态的方法如下：</p>
+<ul>
+<li>Start (<code>AudioQueueStart</code>).初始化audio queue用来record或者playback。</li>
+<li>Prime (<code>AudioQueuePrime</code>).对于playback，在调用<code>AudioQueueStart</code>挚爱去哪调用确保数据可用，这个方法和record没有关系。</li>
+<li>Stop (<code>AudioQueueStop</code>). 调用以后会重置audio queue，然后会停止record或者playback。在playback应用中，一般在没有audio data可以播放时候调用。</li>
+<li>Pause (<code>AudioQueuePause</code>). 在record或者playback中调用这个方法不会影响到buffers。如果需要恢复，调用<code>AudioQueueStart</code>。</li>
+<li>Flush (<code>AudioQueueFlush</code>). 在enqueue最后一个audio queue buffer以后调用这个方法，确保所有的数据被record或者play（主要是在midst processing的数据）。</li>
+<li>Reset (<code>AudioQueueReset</code>). 调用以后立即停止audio queue，然后将所有的buffers移除，重置所有的DSP状态等到。</li>
+</ul>
+<p>在调用<code>AudioQueueStop</code>方法时候有两种模式：同步和异步。</p>
+<ul>
+<li>Synchronous stopping happens immediately, without regard for previously buffered audio data.</li>
+<li>Asynchronous stopping happens after all queued buffers have been played or recorded.</li>
+</ul>
+<hr>
+<h2 id="Recording-Audio"><a href="#Recording-Audio" class="headerlink" title="Recording Audio"></a>Recording Audio</h2><p>当我们的record使用Audio Queue Services，存储的路径可以是磁盘上的任何地方，或者网络，或者内存中。这部分内容记录大多数的使用场景，存储在磁盘中。</p>
+<p>具体的步骤如下：</p>
+<ol>
+<li>定义一个结构体去存储状态，format，文件路径等信息。</li>
+<li>完成audio queue callback函数，其中将record以后的数据进行存储。</li>
+<li>为audio queue buffers计算出合适的大小，并且在file中写入magic cookies。</li>
+<li>初始化自定义的结构体</li>
+<li>创建recording audio queue，然后给它创建3个audio queue buffers，然后创建一个file用来存储record以后的audio data。</li>
+<li>启动audio queue</li>
+<li>当audio queue停止以后，dispose它以及buffers</li>
+</ol>
+<p>具体的实现内容可以参考Apple官方文档：<a href="https://developer.apple.com/library/prerelease/content/documentation/MusicAudio/Conceptual/AudioQueueProgrammingGuide/AQRecord/RecordingAudio.html" target="_blank" rel="external">Recording Audio</a>。</p>
+<h2 id="Playing-Audio"><a href="#Playing-Audio" class="headerlink" title="Playing Audio"></a>Playing Audio</h2><p>当我们使用Audio Queue Service去play audio时，音频源文件可以是任何在disk file或者memory中，这部分内容是如何用Audio Queue Service播放存储在disk上的audio file。</p>
+<p>具体的步骤如下：</p>
+<ol>
+<li>定义一个结构体管理Audio queue的状态，format，file path等</li>
+<li>完成audio queue callback函数去进行实际的播放</li>
+<li>创建一个函数用来计算最适合的audio queue buffer的大小</li>
+<li>打开audio file，确定它的audio data format</li>
+<li>创建audio queue，对它进行配置</li>
+<li>为audio queue创建buffers，然后启动audio queue，当播放结束，callback让audio queue停止播放</li>
+<li>销毁audio queue</li>
+</ol>
+<p>具体的实现内容可以参考Apple官方文档：<a href="https://developer.apple.com/library/prerelease/content/documentation/MusicAudio/Conceptual/AudioQueueProgrammingGuide/AQPlayback/PlayingAudio.html" target="_blank" rel="external">Playing Audio</a>。</p>
+<h2 id="可运行的Demo"><a href="#可运行的Demo" class="headerlink" title="可运行的Demo"></a>可运行的Demo</h2><p>请参考我的github: <a href="https://github.com/brownfeng/AudioQueueServiceDemo" target="_blank" rel="external">https://github.com/brownfeng/AudioQueueServiceDemo</a></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/07/26/RunLoop总结/" itemprop="url">
                   RunLoop学习总结
                 </a>
@@ -1468,6 +1364,110 @@
 <h3 id="参考内容"><a href="#参考内容" class="headerlink" title="参考内容"></a>参考内容</h3><p><a href="http://blog.ibireme.com/2015/05/18/runloop/" target="_blank" rel="external">http://blog.ibireme.com/2015/05/18/runloop/</a></p>
 <p><a href="http://yun.baidu.com/share/link?shareid=2268593032&amp;uk=2885973690" target="_blank" rel="external">http://yun.baidu.com/share/link?shareid=2268593032&amp;uk=2885973690</a></p>
 
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/07/25/popToViewController的坑/" itemprop="url">
+                  popToViewController的坑
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-07-25T20:17:10+08:00" content="2016-07-25">
+              2016-07-25
+            </time>
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/07/25/popToViewController的坑/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/25/popToViewController的坑/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>在使用popViewController时候遇到了两个比较隐蔽的问题.因此,在以后的开发中需要自己注意.</p>
+<h3 id="tips1"><a href="#tips1" class="headerlink" title="tips1"></a>tips1</h3><p>在调用popViewController时,使用GCD丢到main queue中去执行:</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(<span class="number">0.1</span> * <span class="built_in">NSEC_PER_SEC</span>)), dispatch_get_main_queue(), ^&#123;</div><div class="line">	...</div><div class="line">   [<span class="keyword">self</span>.navigationController popViewControllerAnimated:<span class="literal">NO</span>];</div><div class="line">	...</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h3 id="tips2"><a href="#tips2" class="headerlink" title="tips2"></a>tips2</h3><p>在代码中可能连续多次调用<code>popViewControllerAnimated</code>地方,最好通过遍历<code>navigationController.viewControllers</code>找到具体要遍历到哪个再直接pop到目标<code>controller</code>.</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(<span class="number">0.1</span> * <span class="built_in">NSEC_PER_SEC</span>)), dispatch_get_main_queue(), ^&#123;</div><div class="line">    <span class="built_in">BOOL</span> findIt = <span class="literal">NO</span>;</div><div class="line">    <span class="built_in">UIViewController</span> *targetVC = <span class="literal">nil</span>;</div><div class="line">    <span class="keyword">for</span> (<span class="built_in">UIViewController</span> *subVC <span class="keyword">in</span> <span class="keyword">self</span>.navigationController.viewControllers) &#123;</div><div class="line">        <span class="keyword">if</span> (findIt) &#123;</div><div class="line">            <span class="keyword">break</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">if</span> (subVC == xxx) &#123;</div><div class="line">            findIt = <span class="literal">YES</span>;</div><div class="line">        &#125;<span class="keyword">else</span>&#123;</div><div class="line">            targetVC = subVC;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">	[<span class="keyword">self</span>.navigationController popToViewController:targetVC animated:<span class="literal">NO</span>];</div><div class="line"></div><div class="line">&#125;);</div></pre></td></tr></table></figure>
           
         
       
